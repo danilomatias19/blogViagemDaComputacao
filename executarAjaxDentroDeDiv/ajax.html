@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>Documento simples para testar  o recebimento de código js, bem como apenas texto</title>
+		<style type='text/css'>
+			#tudo {width:1004px; margin-left:auto; margin-right:auto; } #princ {float:left; width:inherit; background-color:#CCC } #cab {width:inherit; height:100px  } #nav { width:inherit; height:30px}#menu {	width: 200px;float:left} #painel { width:800px; float:left; background-color:#FAFAFA 	}#rodape { float:left; width:1000px; height:40px;  }.menuItem {min-height:30px; background-color:#FFC; vertical-align:middle; display:block; width:inherit; text-align:left; border:none; cursor:pointer; margin-bottom:2px }.novoLink {cursor:pointer; color:#00C }
+		</style>
+	</head>
+	<body >
+	<script type="text/javascript">
+			var request = false;
+			var campos="?campo1="+"esseEUmCampo1"+"&"+"campo2"+"="+"esseEhOcampo2";
+			/*!  Essa variável campos, não é usada mas se todos os dados dos formulários poderiam estar nela separados por &, como sugere ali, ela é uma string que conteria todos os campos!*/
+			/*!
+			*       request.readyState == 0 - Não iniciado (Uninitialised)
+			*       request.readyState == 1 - Carregando (Loading)
+			*       request.readyState == 2 - Carregado (Loaded)
+			*       request.readyState == 3 - Interativo (Interactive)
+			*       request.readyState == 4 - Completado (Completed)
+			*       request.readyState== 200 - ok || request.readyState== 404 - objeto não encontrado
+			*       Essas variáveis, REQ_FIM e  REQ_OK , servem apenas para ficar mais lógico o status do ajax
+			!*/
+			function stateChangeListener() { //Funcao ativada a cada mudanca de status na comunicacao com o servidor de transferencia
+				if (request.readyState != 4) {//FIM (4)
+					return;
+				}
+				if (request.status == 200) {
+					recebe(request.responseText);
+					request=false;
+				}
+				return;
+			}
+			/*!  Função que é chamada quando muda o status da comunicação do ajax, essa especificamente só é chamada pelo ajax do botão  Só texto, id="Sotexto" !*/
+			function stateChangeListenerSOTEXTO() { //Função ativada a cada mudança de status na comunicação com o servidor de transferencia
+				if (request.readyState != 4) {
+					return;
+				}
+				if (request.status == 200) {
+					/* ok (200) se os dados chegaram do servidor, chama a função recebeSOTEXTO(request.responseText);  request.responseText  contém os dados chegaram do servidor*/
+					recebeSOTEXTO(request.responseText);
+					request=false;
+				}
+				return;
+			}
+			function ajax(url,params) {// Função que envia a url e seus parametros para o servidor de transferencia (AJAX)
+				if(window.XMLHttpRequest) {
+					request = new window.XMLHttpRequest();
+				} else if (window.ActiveXObject) {
+					request = new window.ActiveXObject('Microsoft.XMLHTTP');
+				}
+				if(request) {
+							if(url.indexOf("textoJS.php")!=-1){//identifica o botão pressionado pelo conteúdo da url
+								request.onreadystatechange = stateChangeListener;
+							}
+							if(url.indexOf("soTexto.php")!=-1){
+								request.onreadystatechange = stateChangeListenerSOTEXTO;
+							}
+						request.open("POST", url, true);
+						request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+						request.send();
+				}
+			}
+			/*! função que recebe os dados do servidor e coloca na div além de executar o javascript se existir a tag <script> na resposta do servidor!*/
+			function recebe(msg) {
+				var i, s, scripts;
+					document.getElementById("painel").insertAdjacentHTML('beforeend', msg);//coloco todo o html recebido no painel
+					scripts = document.getElementById("painel").getElementsByTagName("script");//pego todas as tags scripts do painel
+						for(i=0; i<scripts.length; i++)	{
+							s=scripts[i].innerHTML;
+							eval(s);//executo o código de cada tag <script> do painel
+						}
+			}
+			/*! função que recebe os dados do servidor e coloca na div toda  a resposta do servidor em apenas um texto em uma linha !*/
+			function recebeSOTEXTO(msg) {
+				document.getElementById("painel").appendChild(document.createTextNode(msg));//concateno o que veio do servidor ao último elementodo div
+			}
+	</script>
+		<div id="tudo">
+			<div id='princ'>
+					<div id='cab'>
+					<p>Cabecalho</p>
+					</div>
+					<div id='nav'>
+					<p>Nevagação principal</p>
+					</div>
+					<div id='menu'>
+					<h3>Menu esquerdo</h3>
+					<button class='menuItem' onClick='ajax("soTexto.php"+campos)' id="Sotexto">Só texto</button>
+					<button class='menuItem' onClick='ajax("textoJS.php")' id="javascript">texto com javascript</button>
+					</div>
+				<hr>
+					<div id='painel'>
+						<p>Area de aplicação</p>
+					</div>
+					<div id='rodape'>
+						<p>Rodape</p>
+					</div>
+			</div>
+		</div>
+	</body>
+</html>
