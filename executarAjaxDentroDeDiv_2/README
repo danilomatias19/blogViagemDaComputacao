@@ -1,0 +1,6 @@
+README executarAjaxDentroDeDiv
+Esse repositório contém os arquivos ajax.html,  soTexto.php e textoJS.php
+Onde o arquivo, ajax.html é o arquivo que possui a interface html, lógica javascript, para
+executar javascript recebido dinamicamente do servidor textoJS.php,
+	 textoJS.php contém o código php que gera as tags e o código javascript (<script type="text/javascript">window.prompt("Prompt", "prompt");</script><br /> Quebra de linha<script>window.alert("alert");</script><br /> oi),
+	 soTexto.php gera um texto(Ok está enviando somente texto  Valores passados no array $_REQUEST Array(     [campo1] => esseEUmCampo1[campo2] => esseEhOcampo2) Legal só texto) que será concatenado ao painel
