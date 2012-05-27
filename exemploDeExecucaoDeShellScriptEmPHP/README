@@ -1,0 +1,12 @@
+Esse arquivo.php é um pequeno exemplo de manipulação de DOM em php (é necessário instalar o suporte ao DOM em php), bem como de como fazer chamadas a comandos do sistema operacional, poderiam estar sendo criadas regras do iptables, squid por exemplo, mas boa sorte, talvez o ajude a fazer seu código php chamar um comando shell script do terminal no linux, por exemplo.
+Para funcionar as funções exec($cmd);system($cmd);`$cmd`;popen($cmd, 'r'); devem estar habilitadas
+http://br.php.net/manual/pt_BR/ini.sect.safe-mode.php#ini.safe-mode-exec-dir
+http://br.php.net/manual/pt_BR/ini.sect.safe-mode.php#ini.safe-mode
+http://br.php.net/manual/pt_BR/language.operators.execution.php
+http://br.php.net/manual/pt_BR/ref.exec.php
+http://br.php.net/manual/pt_BR/book.exec.php
+http://br.php.net/manual/pt_BR/language.operators.execution.php
+http://br.php.net/manual/pt_BR/function.shell-exec.php
+Acesse:
+http://br.php.net/manual/pt_BR/class.domattr.php
+http://br.php.net/manual/pt_BR/book.dom.php
