@@ -1,6 +1,6 @@
 Esse arquivo.php é um pequeno exemplo de manipulação de DOM em php (é necessário instalar o suporte ao DOM em php),e de como de como fazer chamadas a comandos do sistema operacional (executar comandos do terminal (shell)).
 Ao invés de estar chamando (pwd ; file  exSystem.php; stat exSystem.php; date; printenv ; df; lspci; lsusb; last; lsof; whoami ; uptime)
-poderi executar iptable, squid para gerenciamento de rotas e de cache web.
+poderia executar iptable, squid para gerenciamento de rotas e de cache web.
 Boa sorte, talvez esse simples código o ajude a fazer seu código php chamar um comando shell script do terminal no linux.
 Para funcionar as funções exec($cmd);system($cmd);`$cmd`;popen($cmd, 'r'); devem estar habilitadas
 Acesse:
