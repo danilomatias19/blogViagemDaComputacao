@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>	
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+		<title>
+			Teste de simples de abas javascript
+		</title>
+	</head>
+	<body>
+		<style type="text/css">			
+			.menuAbas {
+					color: #ff8492; 
+					border-left: solid 1px #CCCCCC;
+					border-right: solid 1px #CCCCCC;
+					padding: 3px;
+				}
+			.menuAbas-sel {
+					color: #ffffff; 
+					background-color: #000000;
+					border-left: solid 1px #CCCCCC;
+					border-right: solid 1px #CCCCCC;					
+			}
+			/*classe css sel é quando clicar com o mouse na aba, as demais estarão em menuAbas*/
+			
+		</style>
+		<script language="javascript" type="text/javascript">
+				function getElementByIdDM(){
+					if (arguments.length >0 && document.getElementById(arguments[0]) != "undefined" && document.getElementById(arguments[0]) != null)
+						return arguments[0];
+				}
+				function stAba(menu,conteudo) {
+					this.menu = menu;
+					this.conteudo = conteudo;
+				} 	/*Objeto com a div do título da aba e a div do conteúdo da aba*/	
+					function objadd(){
+						var srt;
+							this.alertX=alertX;							
+							this.setSrt=setSrt;
+							this.getSrt=getSrt;
+							this.addOnElement=addOnElement;
+								function setSrt(_srt){
+									srt=_srt;
+								}
+								function getSrt(){
+									return srt;
+								}
+								function addOnElement(IdElement, strHTML ){
+									document.getElementById(IdElement).insertAdjacentHTML("BeforeEnd", strHTML); 
+								}
+								function alertX( X ){
+									window.alert(X);
+								}
+					}			
+					function abas(abamae, nm_){
+						/*"Classe" abas onde se passa o nome da div onde serão colacadas as abas
+						e o nome da instância so objeto, tem que passar o nome da instância 
+						devido a chamada de método da classe em um evento que será colocado na aba via DOM
+						SE você souber como posso obter o nome dessa instância diretamente sem ter que
+						obrigar explicitamente o usuário a colocar o nome dela como parâmetro na criação
+						do "objeto" mande a resposta para danilomatias19@gmail.com
+						*/
+							var cssMenuAbasSel;
+							var cssMenuAbas;
+							var posTabSel=-1;/*em qual aba foi clicada por último?*/
+							var nm=nm_;
+							var arb =new Array();
+							var nmdvmae =abamae;
+							var dvmae =document.getElementById(abamae);							
+							setCssMenuAbas("menuAbas");
+							setCssMenuAbasSel("menuAbas-sel");
+							var dvBody = document.createElement("div");
+							dvBody.setAttribute("id", abamae+"dvBody_");
+							dvmae.appendChild(dvBody);
+								this.getPosTabSel = getPosTabSel ;
+								this.getNm = getNm;
+								this.getArb =getArb;
+								this.getArb2str=getArb2str;
+								this.getArb2strPrompt=getArb2strPrompt;
+								this.getNmdvmae = getNmdvmae;
+								this.getDvmae = getDvmae;	
+								this.getCssMenuAbasSel=getCssMenuAbasSel;
+								this.getCssMenuAbas=getCssMenuAbas;
+								this.setPosTabSel = setPosTabSel ;
+								this.setNm = setNm;
+								this.setCssMenuAbasSel=setCssMenuAbasSel;
+								this.setCssMenuAbas=setCssMenuAbas;
+								this.changeTab=changeTab;
+								this.addTab=addTab;
+								this.getElementByIdX=getElementByIdX;
+								this.getPropriedadesObjeto=getPropriedadesObjeto;						
+									function getPosTabSel(){
+										return posTabSel;
+									}
+									function getNm(){
+										return nm;
+									}									
+									function getArb(){
+										return arb;
+									}
+									function getArb2str(){
+										var sr="";											
+											for( i in arb){			
+												for(j in arb[i]){
+													sr+="arb["+j+"]="+"{"+arb[i].menu+" =="+arb[i].conteudo+"} ";
+												}
+											}
+											sr+=arb.toString();
+											return sr;						
+									}
+									function getArb2strPrompt(){
+										window.prompt("Array arb", getArb2str());					
+									}
+									function getNmdvmae(){
+										return nmdvmae;
+									}
+									function getDvmae(){
+										return dvmae;
+									}
+									function getCssMenuAbasSel(){
+										return cssMenuAbasSel;
+									}
+									function getCssMenuAbas(){
+										return cssMenuAbas;
+									}
+									function setPosTabSel(posTabSel_){
+										posTabSel=posTabSel_;
+									}
+									function setNm(nm__){
+										nm=nm__;
+									}
+									function setCssMenuAbasSel(cssMenuAbasSel_){
+										cssMenuAbasSel=cssMenuAbasSel_;
+									}
+									function setCssMenuAbas(cssMenuAbas_){
+										cssMenuAbas=cssMenuAbas_;
+									}
+										function getPropriedadesObjeto(obj){
+											var str="";
+												str += obj.constructor.toString();
+													str += "   +-+    ";
+													for(var x in obj){														
+														str += x + ": " + obj[x] + "<br />";  												
+													}
+												 
+												dvmae.insertAdjacentHTML("beforeend", str);
+										}									
+
+										function getElementByIdX(el){
+											/*método apenas para não correr o risco de receber um null ao invés
+												do objeto do ID											
+											*/
+											if(document.getElementById(el)!= undefined && document.getElementById(el) != null){
+												return document.getElementById(el);
+											}
+											else
+											{
+												window.alert("!!Erro!! document.getElementById("+el+") é nulo!");
+											}
+										}
+										function changeTab( menu,conteudo){
+											/*
+													Método que mudará de aba ao clicar
+												em outra aba,ele apenas esconde todasas demais e no final mostra a aba desejada
+											*/
+												for (var i=0;i<arb.length;i++){
+													getElementByIdX(arb[i].menu).className = cssMenuAbas ;												
+													getElementByIdX(arb[i].conteudo).style.display = "none";
+														if(arb[i].menu==arguments[0]){												
+															posTabSel=i;
+														}
+												}	
+											getElementByIdX(arguments[0].id).className = cssMenuAbasSel;
+											getElementByIdX(arguments[1].id).style.display = "";																
+										}
+										function addTab(hdr, bdy){
+											/*
+												método que adiciona a nova aba
+											*/
+											var hdr1 = getElementByIdX(arguments[0]);
+											var bdy1 = getElementByIdX(arguments[1]);
+											arb[arb.length]=new stAba(arguments[0], arguments[1]);					
+											hdr1.setAttribute("onClick", nm+".changeTab("+arguments[0]+", "+arguments[1]+")");
+											/* aqui acima adiciona via DOM o evento de onClick na aba recém criada, note que preciso
+											saber q instância do objeto, por isso o nm*/
+											bdy1.style.display="none";
+											hdr1.style.display="inline";
+											hdr1.className = cssMenuAbas ;
+										}
+					}		
+					/* Agora a herança em  abas */
+				 abas.prototype= new objadd();
+					function gambiId(){
+						if(arguments.length>0){
+							
+							document.getElementById(arguments[0]).disabled=document.getElementById(arguments[0]).disabled?false:true;
+							//document.getElementById(arguments[0]).style.visibility="hidden";
+							/*com o hidden ele some completamente*/
+							//document.getElementById(arguments[0]).disable();
+							
+						}
+					}
+					function gambiArrayId(){
+						if(arguments.length>0 &&  arguments[0].length >0){
+								for(var i=0; i<arguments[0].length ; i++){
+									gambiId(""+arguments[0][i]);
+								}
+							
+						}
+					}
+		</script>		
+		<div id="header">
+			<div id="aba1" >Aba 1
+			</div>
+			<div id="aba2">Aba 2
+			</div>
+			<div id="aba3">Aba 3
+			</div>
+			<div id="aba4">Aba 4 
+			</div>
+		</div>
+		<div id="divBody" >
+			<div id="divDentro1" > div dentro 1 <input type="text" size="20"> </div>
+			<div id="divDentro2" > div dentro 2 <input type="text" value="div dentro 2" style="background-color:green; color:yellow;"> </div>
+			<div id="divDentro3" > div dentro 3<input type="text" value="div dentro 3" color="red" style="background-color:black; color:white;"> 					<div id="h3">
+					<div id="aba3_1" >Aba 3.1
+					</div>
+					<div id="aba3_2">Aba 3.2
+					</div>
+					<div id="aba3_3">Aba 3.3
+					</div>					
+				</div>					
+				<div id="div3_1">
+					<input type="text" value="aba3.1" style="background-color:gray">
+				</div>
+				<div id="div3_2"> 
+					<input type="text" value="aba3.2" style="background-color:black; color:red;">
+				</div>
+				<div id="div3_3">
+					<input type="text" value="aba3.3" style="background-color:blue; color:yellow;" id="inputDiv3_3">
+					<br />
+						<input type="button" value="deabilitar Aba 1" OnClick='gambiArrayId(new Array("divDentro1", "aba1", "inputDiv3_3"))'>
+				</div>
+			</div>
+			<div id="divDentro4" > div dentro 4<input type="text" value="div dentro 4" style="background-color:blue; color:yellow;"> </hr></div>
+		</div>
+		<script language="javascript" type="text/javascript">	
+			/* aqui efetivamente crio as abas 
+				observe que o nm passado para o construtor da "classe"
+				tem que ser exatamente o mesmo nome da instância do objeto, no caso nm			
+				*/			
+			nm = new abas("divBody", "nm");				
+				nm.addTab("aba1", "divDentro1");
+				nm.addTab("aba2", "divDentro2");
+				nm.addTab("aba3", "divDentro3");
+				nm.addTab("aba4", "divDentro4");
+			nm3 = new abas("divDentro3", "nm3");	
+				nm3.addTab("aba3_1", "div3_1");
+				nm3.addTab("aba3_2", "div3_2");
+				nm3.addTab("aba3_3", "div3_3");
+				nm3.getPropriedadesObjeto(nm3);				
+				 nm3.addOnElement("divDentro1", "<h1>Eu te amo Amore!</h1>")
+		</script>
+	</body>
+</html>
