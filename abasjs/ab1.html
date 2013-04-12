@@ -28,9 +28,26 @@
 					if (arguments.length >0 && document.getElementById(arguments[0]) != "undefined" && document.getElementById(arguments[0]) != null)
 						return arguments[0];
 				}
-				function stAba(menu,conteudo) {
+				function stAba(menu,conteudo, heigth, width) {
 					this.menu = menu;
 					this.conteudo = conteudo;
+					this.heigth=heigth;
+					this.width=width;
+					getElementByIdX(this.menu).style.heigth=heigth;
+					getElementByIdX(this.menu).style.width=width;
+							function getElementByIdX(el){
+								/*método apenas para não correr o risco de receber um null ao invés
+									do objeto do ID											
+								*/
+								if( document.getElementById(el)!= "undefined" &&  document.getElementById(el)!= undefined && document.getElementById(el) != null && document.getElementById(el) != "null"){
+									return document.getElementById(el);
+								}
+								else
+								{
+									window.alert("!!Erro!! document.getElementById("+el+") é nulo!");
+								}
+							}
+					
 				} 	/*Objeto com a div do título da aba e a div do conteúdo da aba*/	
 					function objadd(){
 						var srt;
@@ -51,26 +68,36 @@
 									window.alert(X);
 								}
 					}			
-					function abas(abamae, nm_){
+					function abas(){
 						/*"Classe" abas onde se passa o nome da div onde serão colacadas as abas
 						e o nome da instância so objeto, tem que passar o nome da instância 
 						devido a chamada de método da classe em um evento que será colocado na aba via DOM
 						SE você souber como posso obter o nome dessa instância diretamente sem ter que
 						obrigar explicitamente o usuário a colocar o nome dela como parâmetro na criação
 						do "objeto" mande a resposta para danilomatias19@gmail.com
+							arguments[0]:abamae
+							arguments[1]:nm_
+							arguments[2]:altura
+							arguments[3]:largura
+							arguments[4]:
 						*/
 							var cssMenuAbasSel;
 							var cssMenuAbas;
 							var posTabSel=-1;/*em qual aba foi clicada por último?*/
-							var nm=nm_;
+							var nm=arguments[1];
 							var arb =new Array();
-							var nmdvmae =abamae;
-							var dvmae =document.getElementById(abamae);							
+							var nmdvmae =arguments[0];
+							var dvmae = getElementByIdX(arguments[0]);							
+							var dvBody = document.createElement("div");
+							var altura;
+							var largura;
 							setCssMenuAbas("menuAbas");
 							setCssMenuAbasSel("menuAbas-sel");
-							var dvBody = document.createElement("div");
-							dvBody.setAttribute("id", abamae+"dvBody_");
+							dvBody.setAttribute("id", arguments[0]+"dvBody_");
 							dvmae.appendChild(dvBody);
+							 setAltura2(arguments);
+							 var x = new Array();
+								dvmae.insertAdjacentHTML("BeforeEnd",  " arguments("+getStrArray(arguments)+")");
 								this.getPosTabSel = getPosTabSel ;
 								this.getNm = getNm;
 								this.getArb =getArb;
@@ -87,7 +114,18 @@
 								this.changeTab=changeTab;
 								this.addTab=addTab;
 								this.getElementByIdX=getElementByIdX;
-								this.getPropriedadesObjeto=getPropriedadesObjeto;						
+								this.getPropriedadesObjeto=getPropriedadesObjeto;
+								this.setAltura=setAltura;
+								this.setAltura2=setAltura2;
+								this.setLargura=setLargura;
+								this.getAltura=getAltura;
+								this.getLargura=getLargura;
+									function getAltura(){
+										return altura;
+									}
+									function getLargura(){
+										return largura;
+									}
 									function getPosTabSel(){
 										return posTabSel;
 									}
@@ -122,6 +160,28 @@
 									function getCssMenuAbas(){
 										return cssMenuAbas;
 									}
+									function setAltura(){
+										if(arguments.length>0){
+											altura=arguments[0];
+											dvmae.style.heigth=altura;								
+											dvmae.insertAdjacentHTML("BeforeEnd",  " setAltura("+altura+")");
+										}										
+									}
+									function setLargura(){
+										if(arguments.length>0){
+											largura=arguments[0];
+											dvmae.style.width=largura;
+											dvmae.insertAdjacentHTML("BeforeEnd",  "  setLargura("+largura+")");
+										}										
+									}
+									function setAltura2(){
+										if(arguments.length>2){
+											setAltura(arguments[2]);
+												if(arguments.length>3){
+													setLargura(arguments[3]);														
+												}
+										}										
+									}									
 									function setPosTabSel(posTabSel_){
 										posTabSel=posTabSel_;
 									}
@@ -149,7 +209,7 @@
 											/*método apenas para não correr o risco de receber um null ao invés
 												do objeto do ID											
 											*/
-											if(document.getElementById(el)!= undefined && document.getElementById(el) != null){
+											if( document.getElementById(el)!= "undefined" &&  document.getElementById(el)!= undefined && document.getElementById(el) != null && document.getElementById(el) != "null"){
 												return document.getElementById(el);
 											}
 											else
@@ -178,13 +238,32 @@
 											*/
 											var hdr1 = getElementByIdX(arguments[0]);
 											var bdy1 = getElementByIdX(arguments[1]);
-											arb[arb.length]=new stAba(arguments[0], arguments[1]);					
+											arb[arb.length]=new stAba(arguments[0], arguments[1],altura, largura);					
 											hdr1.setAttribute("onClick", nm+".changeTab("+arguments[0]+", "+arguments[1]+")");
 											/* aqui acima adiciona via DOM o evento de onClick na aba recém criada, note que preciso
 											saber q instância do objeto, por isso o nm*/
 											bdy1.style.display="none";
 											hdr1.style.display="inline";
 											hdr1.className = cssMenuAbas ;
+										}
+										function getStrArray(){
+											if(arguments.length>0){
+												var ar=arguments[0];
+													if(ar.length>0){
+														/*é um array com elementos */
+														var str=" [ ";
+														for(var i=0; i<ar.length;i++){
+															if(i<(ar.length-1)){
+																str+=ar[i];
+																str+=", ";
+															}else{
+																str+=ar[i];
+																str+=" ] ";
+															}
+														}
+														return str;
+													}												
+											}
 										}
 					}		
 					/* Agora a herança em  abas */
@@ -207,6 +286,7 @@
 							
 						}
 					}
+					
 		</script>		
 		<div id="header">
 			<div id="aba1" >Aba 1
@@ -221,7 +301,7 @@
 		<div id="divBody" >
 			<div id="divDentro1" > div dentro 1 <input type="text" size="20"> </div>
 			<div id="divDentro2" > div dentro 2 <input type="text" value="div dentro 2" style="background-color:green; color:yellow;"> </div>
-			<div id="divDentro3" > div dentro 3<input type="text" value="div dentro 3" color="red" style="background-color:black; color:white;"> 					<div id="h3">
+			<div id="divDentro3" style="border:2px solid;"> div dentro 3<input type="text" value="div dentro 3" color="red" style="background-color:black; color:white;"> 					<div id="h3">
 					<div id="aba3_1" >Aba 3.1
 					</div>
 					<div id="aba3_2">Aba 3.2
@@ -253,12 +333,16 @@
 				nm.addTab("aba2", "divDentro2");
 				nm.addTab("aba3", "divDentro3");
 				nm.addTab("aba4", "divDentro4");
-			nm3 = new abas("divDentro3", "nm3");	
+			nm3 = new abas("divDentro3", "nm3", "300", "500");	
 				nm3.addTab("aba3_1", "div3_1");
 				nm3.addTab("aba3_2", "div3_2");
 				nm3.addTab("aba3_3", "div3_3");
-				nm3.getPropriedadesObjeto(nm3);				
+				//nm3.getPropriedadesObjeto(nm3);				
 				 nm3.addOnElement("divDentro1", "<h1>Eu te amo Amore!</h1>")
+				 
+				 /*
+				 o código ainda não está formatando no tamanho desejado
+				 */
 		</script>
 	</body>
 </html>
