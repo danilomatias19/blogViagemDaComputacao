@@ -1,0 +1,951 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!-- saved from url=(0047)http://danilomatias.zz.mu/tblog/abasjs/ab1.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">	
+		
+		<title>
+			Teste de simples de abas javascript
+		</title>
+                	<script type="text/javascript" >
+/*--------------------------------------------------|
+
+| dTree 2.05 | www.destroydrop.com/javascript/tree/ |
+
+|---------------------------------------------------|
+
+| Copyright (c) 2002-2003 Geir Landrö               |
+
+|                                                   |
+
+| This script can be used freely as long as all     |
+
+| copyright messages are intact.                    |
+
+|                                                   |
+
+| Updated: 17.04.2003                               |
+
+|--------------------------------------------------*/
+/*-----------------------------------------------------------------------------*/
+// Node object
+function Node(id, pid, name, url, title, target, icon, iconOpen, open) {
+	this.id = id;
+	this.pid = pid;
+	this.name = name;
+	this.url = url;
+	this.title = title;
+	this.target = target;
+	this.icon = icon;
+	this.iconOpen = iconOpen;
+	this._io = open || false;
+	this._is = false;
+	this._ls = false;
+	this._hc = false;
+	this._ai = 0;
+	this._p;
+};
+/*-----------------------------------------------------------------------------*/
+// Tree object
+function dTree(objName) {
+	    this.config = {
+		    target: null,   folderLinks : true, useSelection		: true,	useCookies: true,useLines: true,useIcons: true,	useStatusText: false,closeSameLevel: false,inOrder	: false};
+
+	    this.icon = {root: 'imgDtree/base.gif',
+	    folder:'imgDtree/folder.gif',
+	    folderOpen:'imgDtree/folderopen.gif',
+	    node:'imgDtree/page.gif',
+	    empty: 'imgDtree/empty.gif',
+	    line: 'imgDtree/line.gif',
+	    join: 'imgDtree/join.gif',
+	    joinBottom	: 'imgDtree/joinbottom.gif',
+	    plus:'imgDtree/plus.gif',
+	    plusBottom:'imgDtree/plusbottom.gif',
+	    minus: 'imgDtree/minus.gif',
+	    minusBottom: 'imgDtree/minusbottom.gif',
+	    nlPlus: 'imgDtree/nolines_plus.gif',
+	    nlMinus:'imgDtree/nolines_minus.gif'};
+
+	    this.obj = objName;
+	    this.aNodes = [];
+	    this.aIndent = [];
+	    this.root = new Node(-1);
+	    this.selectedNode = null;
+	    this.selectedFound = false;
+	    this.completed = false;
+    };
+/*-----------------------------------------------------------------------------*/
+// Adds a new node to the node array
+dTree.prototype.add = function(id, pid, name, url, title, target, icon, iconOpen, open) {
+	this.aNodes[this.aNodes.length] = new Node(id, pid, name, url, title, target, icon, iconOpen, open);
+};
+/*-----------------------------------------------------------------------------*/
+// Open/close all nodes
+dTree.prototype.openAll = function() {
+	this.oAll(true);
+};
+/*-----------------------------------------------------------------------------*/
+dTree.prototype.closeAll = function() {
+	this.oAll(false);
+};
+/*-----------------------------------------------------------------------------*/
+// Outputs the tree to the page
+dTree.prototype.toString = function() {
+	var str = '<div class="dtree">\n';
+	if (document.getElementById) {
+		if (this.config.useCookies) this.selectedNode = this.getSelected();
+		str += this.addNode(this.root);
+	} else str += 'Browser not supported.';
+	str += '</div>';
+	if (!this.selectedFound) this.selectedNode = null;
+	this.completed = true;
+	return str;
+};
+/*-----------------------------------------------------------------------------*/
+// Creates the tree structure
+dTree.prototype.addNode = function(pNode) {
+	var str = '';
+	var n=0;
+	if (this.config.inOrder) n = pNode._ai;
+	for (n; n<this.aNodes.length; n++) {
+		if (this.aNodes[n].pid == pNode.id) {
+			var cn = this.aNodes[n];
+			cn._p = pNode;
+			cn._ai = n;
+			this.setCS(cn);
+		        if (!cn.target && this.config.target) 
+			        cn.target = this.config.target;
+			    if (cn._hc && !cn._io && this.config.useCookies) 
+			        cn._io = this.isOpen(cn.id);
+			    if (!this.config.folderLinks && cn._hc) 
+			        cn.url = null;
+			        if (this.config.useSelection && cn.id == this.selectedNode && !this.selectedFound) {
+					    cn._is = true;
+					    this.selectedNode = n;
+					    this.selectedFound = true;
+			        }
+			str += this.node(cn, n);
+			    if (cn._ls) break;
+		}
+	}//endfor
+	return str;
+};//end function addNode
+/*-----------------------------------------------------------------------------*/
+// Creates the node icon, url and text
+dTree.prototype.node = function(node, nodeId) {
+	var str = '<div class="dTreeNode">' + this.indent(node, nodeId);
+	    if (this.config.useIcons) {
+		        if (!node.icon) 
+		            node.icon = (this.root.id == node.pid) ? this.icon.root : ((node._hc) ? this.icon.folder : this.icon.node);
+		        if (!node.iconOpen)
+		             node.iconOpen = (node._hc) ? this.icon.folderOpen : this.icon.node;
+		        if (this.root.id == node.pid) {
+			            node.icon = this.icon.root;
+			            node.iconOpen = this.icon.root;
+		        }
+		    str += '<img id="i' + this.obj + nodeId + '" src="' + ((node._io) ? node.iconOpen : node.icon) + '" alt="" />';
+	    }
+	    if (node.url) {
+		    str += '<a id="s' + this.obj + nodeId + '" class="' + ((this.config.useSelection) ? ((node._is ? 'nodeSel' : 'node')) : 'node') + '" href="' + node.url + '"';
+		    if (node.title) 
+		        str += ' title="' + node.title + '"';
+		    if (node.target) 
+		        str += ' target="' + node.target + '"';
+		    if (this.config.useStatusText) 
+		        str += ' onmouseover="window.status=\'' + node.name + '\';return true;" onmouseout="window.status=\'\';return true;" ';
+		        if (this.config.useSelection && ((node._hc && this.config.folderLinks) || !node._hc))
+			        str += ' onclick="javascript: ' + this.obj + '.s(' + nodeId + ');"';
+		    str += '>';
+	    }
+	    else if ((!this.config.folderLinks || !node.url) && node._hc && node.pid != this.root.id)
+		    str += '<a href="javascript: ' + this.obj + '.o(' + nodeId + ');" class="node">';
+	        str += node.name;
+	            if (node.url || ((!this.config.folderLinks || !node.url) && node._hc)) str += '</a>';
+	                str += '</div>';
+	                if (node._hc) {
+		                str += '<div id="d' + this.obj + nodeId + '" class="clip" style="display:' + ((this.root.id == node.pid || node._io) ? 'block' : 'none') + ';">';
+		                str += this.addNode(node);
+		                str += '</div>';
+	                }
+	        this.aIndent.pop();
+	return str;
+
+};//end dTree.prototype.node = function
+/*-----------------------------------------------------------------------------*/
+// Adds the empty and line icons
+dTree.prototype.indent = function(node, nodeId) {
+	var str = '';
+	        if (this.root.id != node.pid) {
+		            for (var n=0; n<this.aIndent.length; n++)
+			                str += '<img src="' + ( (this.aIndent[n] == 1 && this.config.useLines) ? this.icon.line : this.icon.empty ) + '" alt="" />';
+		                    (node._ls) ? this.aIndent.push(0) : this.aIndent.push(1);
+		                        if (node._hc) {
+			                        str += '<a href="javascript: ' + this.obj + '.o(' + nodeId + ');"><img id="j' + this.obj + nodeId + '" src="';
+			                                if (!this.config.useLines)
+			                                     str += (node._io) ? this.icon.nlMinus : this.icon.nlPlus;
+			                                else 
+			                                    str += ( (node._io) ? ((node._ls && this.config.useLines) ? this.icon.minusBottom : this.icon.minus) : ((node._ls && this.config.useLines) ? this.icon.plusBottom : this.icon.plus ) );
+			                        str += '" alt="" /></a>';
+		                        } else str += '<img src="' + ( (this.config.useLines) ? ((node._ls) ? this.icon.joinBottom : this.icon.join ) : this.icon.empty) + '" alt="" />';
+	        }//end  if (this.root.id != node.pid) 
+	return str;
+};//end dTree.prototype.indent
+/*-----------------------------------------------------------------------------*/
+// Checks if a node has any children and if it is the last sibling
+dTree.prototype.setCS = function(node) {
+	var lastId;
+	    for (var n=0; n<this.aNodes.length; n++) {
+		    if (this.aNodes[n].pid == node.id)
+		         node._hc = true;
+		        if (this.aNodes[n].pid == node.pid) 
+		            lastId = this.aNodes[n].id;
+	    }
+	        if (lastId==node.id)
+	             node._ls = true;
+};//
+
+
+
+// Returns the selected node
+
+dTree.prototype.getSelected = function() {
+
+	var sn = this.getCookie('cs' + this.obj);
+
+	return (sn) ? sn : null;
+
+};
+
+
+
+// Highlights the selected node
+
+dTree.prototype.s = function(id) {
+
+	if (!this.config.useSelection) return;
+
+	var cn = this.aNodes[id];
+
+	if (cn._hc && !this.config.folderLinks) return;
+
+	if (this.selectedNode != id) {
+
+		if (this.selectedNode || this.selectedNode==0) {
+
+			eOld = document.getElementById("s" + this.obj + this.selectedNode);
+
+			eOld.className = "node";
+
+		}
+
+		eNew = document.getElementById("s" + this.obj + id);
+
+		eNew.className = "nodeSel";
+
+		this.selectedNode = id;
+
+		if (this.config.useCookies) this.setCookie('cs' + this.obj, cn.id);
+
+	}
+
+};
+
+
+
+// Toggle Open or close
+
+dTree.prototype.o = function(id) {
+
+	var cn = this.aNodes[id];
+
+	this.nodeStatus(!cn._io, id, cn._ls);
+
+	cn._io = !cn._io;
+
+	if (this.config.closeSameLevel) this.closeLevel(cn);
+
+	if (this.config.useCookies) this.updateCookie();
+
+};
+
+
+
+// Open or close all nodes
+
+dTree.prototype.oAll = function(status) {
+
+	for (var n=0; n<this.aNodes.length; n++) {
+
+		if (this.aNodes[n]._hc && this.aNodes[n].pid != this.root.id) {
+
+			this.nodeStatus(status, n, this.aNodes[n]._ls)
+
+			this.aNodes[n]._io = status;
+
+		}
+
+	}
+
+	if (this.config.useCookies) this.updateCookie();
+
+};
+
+
+
+// Opens the tree to a specific node
+
+dTree.prototype.openTo = function(nId, bSelect, bFirst) {
+
+	if (!bFirst) {
+
+		for (var n=0; n<this.aNodes.length; n++) {
+
+			if (this.aNodes[n].id == nId) {
+
+				nId=n;
+
+				break;
+
+			}
+
+		}
+
+	}
+
+	var cn=this.aNodes[nId];
+
+	if (cn.pid==this.root.id || !cn._p) return;
+
+	cn._io = true;
+
+	cn._is = bSelect;
+
+	if (this.completed && cn._hc) this.nodeStatus(true, cn._ai, cn._ls);
+
+	if (this.completed && bSelect) this.s(cn._ai);
+
+	else if (bSelect) this._sn=cn._ai;
+
+	this.openTo(cn._p._ai, false, true);
+
+};
+
+
+
+// Closes all nodes on the same level as certain node
+
+dTree.prototype.closeLevel = function(node) {
+
+	for (var n=0; n<this.aNodes.length; n++) {
+
+		if (this.aNodes[n].pid == node.pid && this.aNodes[n].id != node.id && this.aNodes[n]._hc) {
+
+			this.nodeStatus(false, n, this.aNodes[n]._ls);
+
+			this.aNodes[n]._io = false;
+
+			this.closeAllChildren(this.aNodes[n]);
+
+		}
+
+	}
+
+}
+
+
+
+// Closes all children of a node
+
+dTree.prototype.closeAllChildren = function(node) {
+
+	for (var n=0; n<this.aNodes.length; n++) {
+
+		if (this.aNodes[n].pid == node.id && this.aNodes[n]._hc) {
+
+			if (this.aNodes[n]._io) this.nodeStatus(false, n, this.aNodes[n]._ls);
+
+			this.aNodes[n]._io = false;
+
+			this.closeAllChildren(this.aNodes[n]);		
+
+		}
+
+	}
+
+}
+
+
+
+// Change the status of a node(open or closed)
+
+dTree.prototype.nodeStatus = function(status, id, bottom) {
+
+	eDiv	= document.getElementById('d' + this.obj + id);
+
+	eJoin	= document.getElementById('j' + this.obj + id);
+
+	if (this.config.useIcons) {
+
+		eIcon	= document.getElementById('i' + this.obj + id);
+
+		eIcon.src = (status) ? this.aNodes[id].iconOpen : this.aNodes[id].icon;
+
+	}
+
+	eJoin.src = (this.config.useLines)?
+
+	((status)?((bottom)?this.icon.minusBottom:this.icon.minus):((bottom)?this.icon.plusBottom:this.icon.plus)):
+
+	((status)?this.icon.nlMinus:this.icon.nlPlus);
+
+	eDiv.style.display = (status) ? 'block': 'none';
+
+};
+
+
+
+
+
+// [Cookie] Clears a cookie
+
+dTree.prototype.clearCookie = function() {
+
+	var now = new Date();
+
+	var yesterday = new Date(now.getTime() - 1000 * 60 * 60 * 24);
+
+	this.setCookie('co'+this.obj, 'cookieValue', yesterday);
+
+	this.setCookie('cs'+this.obj, 'cookieValue', yesterday);
+
+};
+
+
+
+// [Cookie] Sets value in a cookie
+
+dTree.prototype.setCookie = function(cookieName, cookieValue, expires, path, domain, secure) {
+
+	document.cookie =
+
+		escape(cookieName) + '=' + escape(cookieValue)
+
+		+ (expires ? '; expires=' + expires.toGMTString() : '')
+
+		+ (path ? '; path=' + path : '')
+
+		+ (domain ? '; domain=' + domain : '')
+
+		+ (secure ? '; secure' : '');
+
+};
+
+
+
+// [Cookie] Gets a value from a cookie
+
+dTree.prototype.getCookie = function(cookieName) {
+
+	var cookieValue = '';
+
+	var posName = document.cookie.indexOf(escape(cookieName) + '=');
+
+	if (posName != -1) {
+
+		var posValue = posName + (escape(cookieName) + '=').length;
+
+		var endPos = document.cookie.indexOf(';', posValue);
+
+		if (endPos != -1) cookieValue = unescape(document.cookie.substring(posValue, endPos));
+
+		else cookieValue = unescape(document.cookie.substring(posValue));
+
+	}
+
+	return (cookieValue);
+
+};
+
+
+
+// [Cookie] Returns ids of open nodes as a string
+
+dTree.prototype.updateCookie = function() {
+
+	var str = '';
+
+	for (var n=0; n<this.aNodes.length; n++) {
+
+		if (this.aNodes[n]._io && this.aNodes[n].pid != this.root.id) {
+
+			if (str) str += '.';
+
+			str += this.aNodes[n].id;
+
+		}
+
+	}
+
+	this.setCookie('co' + this.obj, str);
+
+};
+
+
+
+// [Cookie] Checks if a node id is in a cookie
+
+dTree.prototype.isOpen = function(id) {
+
+	var aOpen = this.getCookie('co' + this.obj).split('.');
+
+	for (var n=0; n<aOpen.length; n++)
+
+		if (aOpen[n] == id) return true;
+
+	return false;
+
+};
+
+
+
+// If Push and pop is not implemented by the browser
+
+if (!Array.prototype.push) {
+
+	Array.prototype.push = function array_push() {
+
+		for(var i=0;i<arguments.length;i++)
+
+			this[this.length]=arguments[i];
+
+		return this.length;
+
+	}
+
+};
+
+if (!Array.prototype.pop) {
+
+	Array.prototype.pop = function array_pop() {
+
+		lastElement = this[this.length-1];
+
+		this.length = Math.max(this.length-1,0);
+
+		return lastElement;
+
+	}
+
+};
+	</script>
+        		<style type="text/css">			
+			.menuAbas {
+					color: #ff8492; 
+					border-left: solid 1px #CCCCCC;
+					border-right: solid 1px #CCCCCC;
+					padding: 3px;
+				}
+			.menuAbas-sel {
+					color: #ffffff; 
+					background-color: #000000;
+					border-left: solid 1px #CCCCCC;
+					border-right: solid 1px #CCCCCC;					
+			}
+			/*classe css sel ï¿½ quando clicar com o mouse na aba, as demais estarï¿½o em menuAbas*/
+			
+            /*--------------------------------------------------|
+        | dTree 2.05 | www.destroydrop.com/javascript/tree/ |
+        |---------------------------------------------------|
+        | Copyright (c) 2002-2003 Geir Landrö               |
+        |--------------------------------------------------*/
+
+        .dtree {
+            font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .dtree img {
+            border: 0px;
+            vertical-align: middle;
+        }
+        .dtree a {
+            color: #333;
+            text-decoration: none;
+        }
+        .dtree a.node, .dtree a.nodeSel {
+            white-space: nowrap;
+            padding: 1px 2px 1px 2px;
+        }
+        .dtree a.node:hover, .dtree a.nodeSel:hover {
+            color: #333;
+            text-decoration: underline;
+        }
+        .dtree a.nodeSel {
+            background-color: #c0d2ec;
+        }
+        .dtree .clip {
+            overflow: hidden;
+        }
+		</style>
+	</head>
+	<body>
+
+		<script language="javascript" type="text/javascript">
+				function getElementByIdDM(){
+					if (arguments.length >0 && document.getElementById(arguments[0]) != "undefined" && document.getElementById(arguments[0]) != null)
+						return arguments[0];
+				}
+				function stAba(menu,conteudo) {
+					this.menu = menu;
+					this.conteudo = conteudo;
+				} 	/*Objeto com a div do tï¿½tulo da aba e a div do conteï¿½do da aba*/	
+					function objadd(){
+						var srt;
+							this.alertX=alertX;							
+							this.setSrt=setSrt;
+							this.getSrt=getSrt;
+							this.addOnElement=addOnElement;
+								function setSrt(_srt){
+									srt=_srt;
+								}
+								function getSrt(){
+									return srt;
+								}
+								function addOnElement(IdElement, strHTML ){
+									document.getElementById(IdElement).insertAdjacentHTML("BeforeEnd", strHTML); 
+								}
+								function alertX( X ){
+									window.alert(X);
+								}
+					}			
+					function abas(abamae, nm_){
+						/*"Classe" abas onde se passa o nome da div onde serï¿½o colacadas as abas
+						e o nome da instï¿½ncia so objeto, tem que passar o nome da instï¿½ncia 
+						devido a chamada de mï¿½todo da classe em um evento que serï¿½ colocado na aba via DOM
+						SE vocï¿½ souber como posso obter o nome dessa instï¿½ncia diretamente sem ter que
+						obrigar explicitamente o usuï¿½rio a colocar o nome dela como parï¿½metro na criaï¿½ï¿½o
+						do "objeto" mande a resposta para danilomatias19@gmail.com
+						*/
+							var cssMenuAbasSel;
+							var cssMenuAbas;
+							var posTabSel=-1;/*em qual aba foi clicada por ï¿½ltimo?*/
+							var nm=nm_;
+							var arb =new Array();
+							var nmdvmae =abamae;
+							var dvmae =document.getElementById(abamae);							
+							setCssMenuAbas("menuAbas");
+							setCssMenuAbasSel("menuAbas-sel");
+							var dvBody = document.createElement("div");
+							dvBody.setAttribute("id", abamae+"dvBody_");
+							dvmae.appendChild(dvBody);
+								this.getPosTabSel = getPosTabSel ;
+								this.getNm = getNm;
+								this.getArb =getArb;
+								this.getArb2str=getArb2str;
+								this.getArb2strPrompt=getArb2strPrompt;
+								this.getNmdvmae = getNmdvmae;
+								this.getDvmae = getDvmae;	
+								this.getCssMenuAbasSel=getCssMenuAbasSel;
+								this.getCssMenuAbas=getCssMenuAbas;
+								this.setPosTabSel = setPosTabSel ;
+								this.setNm = setNm;
+								this.setCssMenuAbasSel=setCssMenuAbasSel;
+								this.setCssMenuAbas=setCssMenuAbas;
+								this.changeTab=changeTab;
+								this.addTab=addTab;
+								this.getElementByIdX=getElementByIdX;
+								this.getPropriedadesObjeto=getPropriedadesObjeto;						
+									function getPosTabSel(){
+										return posTabSel;
+									}
+									function getNm(){
+										return nm;
+									}									
+									function getArb(){
+										return arb;
+									}
+									function getArb2str(){
+										var sr="";											
+											for( i in arb){			
+												for(j in arb[i]){
+													sr+="arb["+j+"]="+"{"+arb[i].menu+" =="+arb[i].conteudo+"} ";
+												}
+											}
+											sr+=arb.toString();
+											return sr;						
+									}
+									function getArb2strPrompt(){
+										window.prompt("Array arb", getArb2str());					
+									}
+									function getNmdvmae(){
+										return nmdvmae;
+									}
+									function getDvmae(){
+										return dvmae;
+									}
+									function getCssMenuAbasSel(){
+										return cssMenuAbasSel;
+									}
+									function getCssMenuAbas(){
+										return cssMenuAbas;
+									}
+									function setPosTabSel(posTabSel_){
+										posTabSel=posTabSel_;
+									}
+									function setNm(nm__){
+										nm=nm__;
+									}
+									function setCssMenuAbasSel(cssMenuAbasSel_){
+										cssMenuAbasSel=cssMenuAbasSel_;
+									}
+									function setCssMenuAbas(cssMenuAbas_){
+										cssMenuAbas=cssMenuAbas_;
+									}
+										function getPropriedadesObjeto(obj){
+											var str="";
+												str += obj.constructor.toString();
+													str += "   +-+    ";
+													for(var x in obj){														
+														str += x + ": " + obj[x] + "<br />";  												
+													}
+												 
+												dvmae.insertAdjacentHTML("beforeend", str);
+										}									
+
+										function getElementByIdX(el){
+											/*mï¿½todo apenas para nï¿½o correr o risco de receber um null ao invï¿½s
+												do objeto do ID											
+											*/
+											if(document.getElementById(el)!= undefined && document.getElementById(el) != null){
+												return document.getElementById(el);
+											}
+											else
+											{
+												window.alert("!!Erro!! document.getElementById("+el+") ï¿½ nulo!");
+											}
+										}
+										function changeTab( menu,conteudo){
+											/*
+													Mï¿½todo que mudarï¿½ de aba ao clicar
+												em outra aba,ele apenas esconde todasas demais e no final mostra a aba desejada
+											*/
+												for (var i=0;i<arb.length;i++){
+													getElementByIdX(arb[i].menu).className = cssMenuAbas ;												
+													getElementByIdX(arb[i].conteudo).style.display = "none";
+														if(arb[i].menu==arguments[0]){												
+															posTabSel=i;
+														}
+												}	
+											getElementByIdX(arguments[0].id).className = cssMenuAbasSel;
+											getElementByIdX(arguments[1].id).style.display = "";																
+										}
+										function addTab(hdr, bdy){
+											/*
+												mï¿½todo que adiciona a nova aba
+											*/
+											var hdr1 = getElementByIdX(arguments[0]);
+											var bdy1 = getElementByIdX(arguments[1]);
+											arb[arb.length]=new stAba(arguments[0], arguments[1]);					
+											hdr1.setAttribute("onClick", nm+".changeTab("+arguments[0]+", "+arguments[1]+")");
+											/* aqui acima adiciona via DOM o evento de onClick na aba recï¿½m criada, note que preciso
+											saber q instï¿½ncia do objeto, por isso o nm*/
+											bdy1.style.display="none";
+											hdr1.style.display="inline";
+											hdr1.className = cssMenuAbas ;
+										}
+					}		
+					/* Agora a heranï¿½a em  abas */
+				 abas.prototype= new objadd();
+					function gambiId(){
+						if(arguments.length>0){
+							
+							document.getElementById(arguments[0]).disabled=document.getElementById(arguments[0]).disabled?false:true;
+							//document.getElementById(arguments[0]).style.visibility="hidden";
+							/*com o hidden ele some completamente*/
+							//document.getElementById(arguments[0]).disable();
+							
+						}
+					}
+					function gambiArrayId(){
+						if(arguments.length>0 &&  arguments[0].length >0){
+								for(var i=0; i<arguments[0].length ; i++){
+									gambiId(""+arguments[0][i]);
+								}
+							
+						}
+					}
+                    	
+		
+		</script>		
+		<div id="header">
+			<div id="aba1" onclick="nm.changeTab(aba1, divDentro1)" style="display: inline;" class="menuAbas">Aba 1
+			</div>
+			<div id="aba2" onclick="nm.changeTab(aba2, divDentro2)" style="display: inline;" class="menuAbas-sel">Aba 2
+			</div>
+			<div id="aba3" onclick="nm.changeTab(aba3, divDentro3)" style="display: inline;" class="menuAbas">Aba 3
+			</div>
+			<div id="aba4" onclick="nm.changeTab(aba4, divDentro4)" style="display: inline;" class="menuAbas">Aba 4 <br />
+          
+			</div>
+		</div>
+		<div id="divBody">
+			<div id="divDentro1" style="display: none;"> div dentro 1 <input type="text" size="20"> <h1>Eu te amo Amore!</h1></div>
+			<div id="divDentro2" style=""> div dentro 2 <input type="text" value="div dentro 2" style="background-color:green; color:yellow;"> <p><a href="javascript: d.openAll();">open all</a> | <a href="javascript: d.closeAll();">close all</a></p></div>
+			<div id="divDentro3" style="display: none;"> div dentro 3<input type="text" value="div dentro 3" color="red" style="background-color:black; color:white;"> 					<div id="h3">
+					<div id="aba3_1" onclick="nm3.changeTab(aba3_1, div3_1)" style="display: inline;" class="menuAbas-sel">Aba 3.1
+					</div>
+					<div id="aba3_2" onclick="nm3.changeTab(aba3_2, div3_2)" style="display: inline;" class="menuAbas">Aba 3.2
+					</div>
+					<div id="aba3_3" onclick="nm3.changeTab(aba3_3, div3_3)" style="display: inline;" class="menuAbas">Aba 3.3
+					</div>					
+				</div>					
+				<div id="div3_1" style="">
+					<input type="text" value="aba3.1" style="background-color:gray">
+				</div>
+				<div id="div3_2" style="display: none;"> 
+					<input type="text" value="aba3.2" style="background-color:black; color:red;">
+				</div>
+				<div id="div3_3" style="display: none;">
+					<input type="text" value="aba3.3" style="background-color:blue; color:yellow;" id="inputDiv3_3" disabled="">
+					<br>
+						<input type="button" value="deabilitar Aba 1" onclick="gambiArrayId(new Array(&quot;divDentro1&quot;, &quot;aba1&quot;, &quot;inputDiv3_3&quot;))">
+				</div>
+			<div id="divDentro3dvBody_"></div>function objadd(){
+						var srt;
+							this.alertX=alertX;							
+							this.setSrt=setSrt;
+							this.getSrt=getSrt;
+							this.addOnElement=addOnElement;
+								function setSrt(_srt){
+									srt=_srt;
+								}
+								function getSrt(){
+									return srt;
+								}
+								function addOnElement(IdElement, strHTML ){
+									document.getElementById(IdElement).insertAdjacentHTML("BeforeEnd", strHTML); 
+								}
+								function alertX( X ){
+									window.alert(X);
+								}
+					}   +-+    getPosTabSel: function getPosTabSel(){
+										return posTabSel;
+									}<br>getNm: function getNm(){
+										return nm;
+									}<br>getArb: function getArb(){
+										return arb;
+									}<br>getArb2str: function getArb2str(){
+										var sr="";											
+											for( i in arb){			
+												for(j in arb[i]){
+													sr+="arb["+j+"]="+"{"+arb[i].menu+" =="+arb[i].conteudo+"} ";
+												}
+											}
+											sr+=arb.toString();
+											return sr;						
+									}<br>getArb2strPrompt: function getArb2strPrompt(){
+										window.prompt("Array arb", getArb2str());					
+									}<br>getNmdvmae: function getNmdvmae(){
+										return nmdvmae;
+									}<br>getDvmae: function getDvmae(){
+										return dvmae;
+									}<br>getCssMenuAbasSel: function getCssMenuAbasSel(){
+										return cssMenuAbasSel;
+									}<br>getCssMenuAbas: function getCssMenuAbas(){
+										return cssMenuAbas;
+									}<br>setPosTabSel: function setPosTabSel(posTabSel_){
+										posTabSel=posTabSel_;
+									}<br>setNm: function setNm(nm__){
+										nm=nm__;
+									}<br>setCssMenuAbasSel: function setCssMenuAbasSel(cssMenuAbasSel_){
+										cssMenuAbasSel=cssMenuAbasSel_;
+									}<br>setCssMenuAbas: function setCssMenuAbas(cssMenuAbas_){
+										cssMenuAbas=cssMenuAbas_;
+									}<br>changeTab: function changeTab( menu,conteudo){
+											/*
+													Mï¿½todo que mudarï¿½ de aba ao clicar
+												em outra aba,ele apenas esconde todasas demais e no final mostra a aba desejada
+											*/
+												for (var i=0;i<arb.length;i++){ getelementbyidx(arb[i].menu).classname="cssMenuAbas" ;="" getelementbyidx(arb[i].conteudo).style.display="none" if(arb[i].menu="=arguments[0]){" postabsel="i;" }="" getelementbyidx(arguments[0].id).classname="cssMenuAbasSel;" getelementbyidx(arguments[1].id).style.display="" }<br="">addTab: function addTab(hdr, bdy){
+											/*
+												mï¿½todo que adiciona a nova aba
+											*/
+											var hdr1 = getElementByIdX(arguments[0]);
+											var bdy1 = getElementByIdX(arguments[1]);
+											arb[arb.length]=new stAba(arguments[0], arguments[1]);					
+											hdr1.setAttribute("onClick", nm+".changeTab("+arguments[0]+", "+arguments[1]+")");
+											/* aqui acima adiciona via DOM o evento de onClick na aba recï¿½m criada, note que preciso
+											saber q instï¿½ncia do objeto, por isso o nm*/
+											bdy1.style.display="none";
+											hdr1.style.display="inline";
+											hdr1.className = cssMenuAbas ;
+										}<br>getElementByIdX: function getElementByIdX(el){
+											/*mï¿½todo apenas para nï¿½o correr o risco de receber um null ao invï¿½s
+												do objeto do ID											
+											*/
+											if(document.getElementById(el)!= undefined &amp;&amp; document.getElementById(el) != null){
+												return document.getElementById(el);
+											}
+											else
+											{
+												window.alert("!!Erro!! document.getElementById("+el+") ï¿½ nulo!");
+											}
+										}<br>getPropriedadesObjeto: function getPropriedadesObjeto(obj){
+											var str="";
+												str += obj.constructor.toString();
+													str += "   +-+    ";
+													for(var x in obj){														
+														str += x + ": " + obj[x] + "<br>";  												
+													}
+												 
+												dvmae.insertAdjacentHTML("beforeend", str);
+										}<br>alertX: function alertX( X ){
+									window.alert(X);
+								}<br>setSrt: function setSrt(_srt){
+									srt=_srt;
+								}<br>getSrt: function getSrt(){
+									return srt;
+								}<br>addOnElement: function addOnElement(IdElement, strHTML ){
+									document.getElementById(IdElement).insertAdjacentHTML("BeforeEnd", strHTML); 
+								}<br></arb.length;i++){></div>
+			<div id="divDentro4" style="display: none;"> div dentro 4<input type="text" value="div dentro 4" style="background-color:blue; color:yellow;"> </div>
+		<div id="divBodydvBody_"></div></div>
+		<script language="javascript" type="text/javascript">	
+			/* aqui efetivamente crio as abas 
+				observe que o nm passado para o construtor da "classe"
+				tem que ser exatamente o mesmo nome da instï¿½ncia do objeto, no caso nm			
+				*/			
+			nm = new abas("divBody", "nm");				
+				nm.addTab("aba1", "divDentro1");
+				nm.addTab("aba2", "divDentro2");
+				nm.addTab("aba3", "divDentro3");
+				nm.addTab("aba4", "divDentro4");
+			nm3 = new abas("divDentro3", "nm3");	
+				nm3.addTab("aba3_1", "div3_1");
+				nm3.addTab("aba3_2", "div3_2");
+				nm3.addTab("aba3_3", "div3_3");
+				nm3.getPropriedadesObjeto(nm3);				
+				 nm3.addOnElement("divDentro1", "<h1>Eu te amo Amore!</h1>");
+                 d = new dTree('d');//aqui dentro tem que ser d para que possa passar
+                                    //a instância do objeto tree
+
+		d.add(0,-1,'Meu Exemplo de árvore');
+		d.add(1,0,'No1','www21.adrive.com/filemanager/uploadfile?dir=%2Ffotos');
+		d.add(2,0,'no2','example01.html');
+		d.add(3,1,'no 1.1','example01.html');
+		d.add(4,0,'no 3','example01.html');
+		d.add(5,3,'No 1.1.1','example01.html');
+		d.add(6,5,'No 1.1.1.1','example01.html');
+		d.add(7,0,'No 4','example01.html');
+		d.add(8,1,'No 1.2','example01.html');
+		d.add(9,0,'Minhas Figuras','example01.html','Figuras de acordo com os anos ','','','imgDtree/imgfolder.gif');
+		d.add(10,9,'A viagem a ilha gelada','example01.html','Pictures of Gullfoss and Geysir');
+		d.add(11,9,'Teste','example01.html');
+		d.add(12,0,'Lixeira','example01.html','','','imgDtree/trash.gif');
+        //esse objeto tree apenas escreve, ele não manipula DOM, o que pode ser feito é modificar o código para
+        //suportar DOM, assim o código fica mais portável 
+                         
+                          document.getElementById("divDentro2").insertAdjacentHTML("BeforeEnd", d);
+		</script>
+	
+
+</body></html>

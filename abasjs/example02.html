@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+
+<head>
+	<title>Destroydrop &raquo; Javascripts &raquo; Tree</title>
+
+	<link rel="StyleSheet" href="dtree.css" type="text/css" />
+	<script type="text/javascript" src="dtree.js"></script>
+
+</head>
+
+<body>
+
+
+
+<h2>Example</h2>
+
+
+
+	<p><a href="javascript: d.openAll();">open all</a> | <a href="javascript: d.closeAll();">close all</a></p>
+	<ol type="disc">
+	    <li>x</li>
+	    <li>y</li>
+	</ol>
+    <div class="dtree" id="dtreezz"></div>
+    <ul type="square">
+	    <li>z</li>
+	    <li>w</li>
+	</ul>
+	<script type="text/javascript">
+		<!--
+
+		d = new dTree('d');
+        var i=0;
+		d.add(i,-1,'My example tree');
+		i++;
+		d.add(i,0,'Node 1','example01.html');
+		i++;
+		d.add(i,0,'Node 2','example01.html');
+		i++;
+		d.add(i,1,'Node 1.1','example01.html');
+		i++;
+		d.add(i,0,'Node 3','example01.html');
+		i++;
+		d.add(i,3,'Node 1.1.1','example01.html');
+		i++;
+		d.add(i,5,'Node 1.1.1.1','example01.html');
+		i++;
+		d.add(i,0,'Node 4','example01.html');
+		i++;
+		d.add(i,1,'Node 1.2','example01.html');
+		i++;
+		d.add(i,0,'My Pictures','example01.html','Pictures I\'ve taken over the years','','','img/imgfolder.gif');
+		i++;
+		d.add(i,9,'The trip to Iceland','example01.html','Pictures of Gullfoss and Geysir');
+		i++;
+		                                                    //title <a title=>
+		d.add(i,9,'Mom\'s birthday','example01.html');
+		i++;
+		d.add(i,0,'Recycle Bin','example01.html','','','img/trash.gif');
+		
+		 document.getElementById("dtreezz").insertAdjacentHTML("BeforeEnd",d.toString());
+		
+		
+       // document.getElementById("dtreezz").insertAdjacentHTML("BeforeEnd",document.write(d));// nem adianta colocar que isso não funciona
+       //ṕara fazer isso com DOM tem que transformar as 415 linhas de código em DOM
+       /*
+         olhe os métodos node e todos aqueles que 
+         retornam strings
+         veja o que pode fazer, mas para utilizar isso
+       */
+		//document.write(d);
+		
+	
+		//-->
+	</script>
+
+</div>
+
+<p><a href="mailto&#58;drop&#64;destroydrop&#46;com">&copy;2002-2003 Geir Landr&ouml;</a></p>
+
+</body>
+
+</html>
