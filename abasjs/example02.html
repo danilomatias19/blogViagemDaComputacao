@@ -19,15 +19,16 @@
 
 
 	<p><a href="javascript: d.openAll();">open all</a> | <a href="javascript: d.closeAll();">close all</a></p>
-	<ol type="disc">
+	<ul type="disc">
 	    <li>x</li>
 	    <li>y</li>
-	</ol>
+	</ul>
     <div class="dtree" id="dtreezz"></div>
     <ul type="square">
 	    <li>z</li>
 	    <li>w</li>
 	</ul>
+	 <div id="dtreez1"></div>
 	<script type="text/javascript">
 		<!--
 
@@ -51,26 +52,20 @@
 		i++;
 		d.add(i,1,'Node 1.2','example01.html');
 		i++;
-		d.add(i,0,'My Pictures','example01.html','Pictures I\'ve taken over the years','','','img/imgfolder.gif');
+		d.add(i,0,'My Pictures','example01.html','Pictures I\'ve taken over the years','','','img/imgfolder.png');
 		i++;
 		d.add(i,9,'The trip to Iceland','example01.html','Pictures of Gullfoss and Geysir');
 		i++;
 		                                                    //title <a title=>
 		d.add(i,9,'Mom\'s birthday','example01.html');
 		i++;
-		d.add(i,0,'Recycle Bin','example01.html','','','img/trash.gif');
+		d.add(i,0,'Recycle Bin','example01.html','','','img/trash.png');
 		
-		 document.getElementById("dtreezz").insertAdjacentHTML("BeforeEnd",d.toString());
+		 //document.getElementById("dtreezz").insertAdjacentHTML("BeforeEnd",d.toString());
+		d.print("dtreezz");
 		
+       
 		
-       // document.getElementById("dtreezz").insertAdjacentHTML("BeforeEnd",document.write(d));// nem adianta colocar que isso não funciona
-       //ṕara fazer isso com DOM tem que transformar as 415 linhas de código em DOM
-       /*
-         olhe os métodos node e todos aqueles que 
-         retornam strings
-         veja o que pode fazer, mas para utilizar isso
-       */
-		//document.write(d);
 		
 	
 		//-->
